@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE control SYSTEM "common-1.7-SNAPSHOT.dtd"> -->
+
+<control>
+	<action path="/front/sh/common!execute">
+		<input uid="c001" service="quartzService" method="updateCronExpression"
+			 desc="修改执行计划">
+			<parameter key="triggerName"/>
+			<parameter key="triggerGroup"/>
+			<parameter key="cronExpression"/>
+		</input>
+		<input uid="c002" service="quartzService" method="deleteJob"
+			 desc="删除JOB">
+			<parameter key="triggerName"/>
+			<parameter key="triggerGroup"/>
+			<parameter key="jobName"/>
+			<parameter key="jobGroup"/>
+		</input>
+		<input uid="c003" service="quartzService" method="pauseTrigger"
+			 desc="暂停任务">
+			<parameter key="triggerName"/>
+			<parameter key="triggerGroup"/>
+		</input>
+		<input uid="c004" service="quartzService" method="resumeTrigger"
+			 desc="恢复启动任务">
+			<parameter key="triggerName"/>
+			<parameter key="triggerGroup"/>
+		</input>
+		<input uid="c005" service="quartzService" method="pauseAllTrigger"
+			 desc="暂停所有触发器">
+		</input>
+		<input uid="c006" service="quartzService" method="startAllTrigger"
+			 desc="启动所有触发器">
+		</input>
+		<input uid="c007" service="quartzService" method="shutdownTrigger"
+			 desc="停止所有触发器">
+		</input>
+		<input uid="c008" service="quartzService" method="getAllJobDetail"
+			 desc="返回所有JOB信息">
+		</input>
+		<input uid="c009" service="quartzService" method="runAJobNow" 
+			desc="立即执行任务">
+			<parameter key="jobName"/>
+			<parameter key="jobGroup"/>
+		</input>
+	</action>
+</control>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="renderer" content="webkit" />
+<meta http-equiv="X-UA-Compatible" content="IE=8,chrome=1" />
+	<title>后台进程管理</title>
+	<link rel="stylesheet" type="text/css" href="css/common.css" media="all">
+	<link rel="stylesheet" href="css/ui-dialog.css" />
+	<style type="text/css">
+
+	</style>
+</head>
+<body>
+	<div class="standard">
+        <h1></h1>
+    </div>
+    <div class="table-list">
+    	<table class="table-record table-form">
+    		<caption><h1>后台进程管理</h1></caption>
+    		<thead class="table-title">
+	    		<tr>
+	    			<th>JOB名称</th>
+	    			<th>JOB描述</th>
+	    			<th>JOB组</th>
+	    			<th>执行计划</th>
+	    			<th>触发器状态</th>
+	    			<th>触发器名称</th>
+	    			<th>触发器组</th>
+	    			<th>启动时间</th>
+	    			<th>最后一次执行时间</th>
+	    			<th>JOB类</th>
+	    			<th>操作</th>
+	    		</tr>
+    		</thead>
+    		<tbody id="J_tabletpl" class="table-content"></tbody>
+    	</table>
+    	<div class="normalBtnArea table-foot-btn">
+	      <a class="normalBtn BGgray largeBtn" href="javascript:;" id="stopAll">全部停止</a>
+	      <a class="normalBtn BGgray largeBtn" href="javascript:;" id="resumeAll">暂停全部任务</a>
+	      <a class="normalBtn BGgray largeBtn" href="javascript:;" id="startAll">全部恢复启动</a>
+	  	</div>
+    </div>
+<style>
+	.table-record tbody tr td>span, 
+	.table-record tbody tr td>.edit, 
+	.table-record tbody .modifyMode td>input, 
+	.table-record tbody .modifyMode td>.save, 
+	.table-record tbody .modifyMode td>.cancel 
+	{ display:inline-block; }
+	
+	
+	.table-record tbody .modifyMode td>span, 
+	.table-record tbody .modifyMode td>.edit, 
+	.table-record tbody tr td>input, 
+	.table-record tbody tr td>.save, 
+	.table-record tbody tr td>.cancel 
+	{ display:none; }
+	
+	.table-record tbody tr .font-blue { color:#00EC00; }
+	.table-record tbody tr .font-orange { color:#FF8000; }
+	.table-record tbody tr .font-red { color:#FF0000; }
+	
+	
+</style>
+<script id="T_tabletpl" type="text/x-handlebars-template">
+    			{{#if beans}}
+        			{{#each beans}}
+           				 <tr data-json="{{toJSON this}}">
+                			<td>{{jobName}}</td>
+                			<td>{{description}}</td>
+							<td>{{jobGroup}}</td>
+               				<td><span class="cronExpression">{{cronExpression}}</span><input type="text" class="cronExpression" value="{{cronExpression}}" /></td>
+							<td class="{{#if_eq triggerDesc compare='正常' }}font-blue{{/if_eq}}
+							{{#if_eq triggerDesc compare='阻塞' }}font-orange{{/if_eq}}
+							{{#if_eq triggerDesc compare='暂停' }}font-red{{/if_eq}}
+							">{{triggerDesc}}</td>   
+							<td>{{triggerName}}</td>
+							<td>{{triggerGroup}}</td>            				
+							<td>{{startTime}}</td>
+                			<td>{{previousFireTime}}</td>
+							<td>{{targetObject}}</td>
+                			<td>
+	    						<a href="javascript:void(0)" class="save">保存</a>
+	    						<a href="javascript:void(0)" class="cancel">取消</a>
+								{{#if_eq triggerDesc compare='正常' }}
+	    						<a href="javascript:void(0)" class="edit">修改</a>
+	    						<a href="javascript:void(0)" class="pauseTrigger">暂停</a>
+								<a href="javascript:void(0)" class="runAJobNow">立即执行</a>
+	    						<a href="javascript:void(0)" class="deleteJob">删除</a>
+								{{/if_eq}}
+								{{#if_eq triggerDesc compare='暂停' }}
+	    						<a href="javascript:void(0)" class="resumeTrigger">启动</a>
+								<a href="javascript:void(0)" class="deleteJob">删除</a>
+								{{/if_eq}}
+								{{#if_eq triggerDesc compare='阻塞' }}
+									<a href="javascript:void(0)" class="deleteJob">删除</a>
+								{{/if_eq}}
+	    					</td>
+            			</tr>
+        			{{/each}}
+    			{{/if}}
+ </script>
+<script type="text/javascript" src="js/jquery-1.9.0-min.js"></script>
+<script type="text/javascript" src="js/dialog-plus.js"></script>
+<script type="text/javascript" src="lib/handlebars/1.3.0/handlebars.js"></script>
+<script type="text/javascript" src="lib/handlebars/1.3.0/helpers.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script>
+
+	//页面加载完开始执行
+	$(document).ready(function () {
+		new Main();
+	});
+	var Main = function() {
+		this.initialize();
+	}
+	Main.prototype = {
+		initialize:function(){
+			this.$list = $('.table-record');
+			this.eventInit();
+			this.listInit();
+		}, 
+		eventInit:function(){
+			this.$list.on('click', 'tbody tr td .edit', $.proxy(this.edit, this))
+				.on('click', 'tbody tr td .cancel', $.proxy(this.cancel, this))
+				.on('click', 'tbody tr td .save', $.proxy(this.save, this))
+				.on('click', 'tbody tr td .pauseTrigger', $.proxy(this.pauseTrigger, this))
+				.on('click', 'tbody tr td .resumeTrigger', $.proxy(this.resumeTrigger, this))
+				.on('click', 'tbody tr td .runAJobNow', $.proxy(this.runAJobNow, this))
+				.on('click', 'tbody tr td .deleteJob', $.proxy(this.deleteJob, this))
+				
+		}, 
+		listInit:function(){
+			Util.ajax.postJson('front/sh/common!execute?uid=c008','',function(json){
+				Util.ajax.loadTemp($('#J_tabletpl'), $('#T_tabletpl'), json);//加载模板
+		    });
+		},
+		pauseTrigger:function(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			if(confirm("确定要暂停此任务吗？")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c003', $.param(itemJSON), function(json){
+					if(json.returnCode=='0'){
+						alert("暂停成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		resumeTrigger(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			
+			if(confirm("确定要启动此任务吗？")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
+					if(json.returnCode=='0'){
+						alert("启动成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		runAJobNow(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			if(confirm("确定要立即执行此任务吗？立即执行不会影响原执行计划！")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
+					if(json.returnCode=='0'){
+						alert("立即执行成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		deleteJob(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			itemJSON.jobName = json.jobName;
+			itemJSON.jobGroup = json.jobGroup;
+			if(confirm("确定要删除此任务吗？谨慎操作，删除后重启应用后会重新加载！")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c002', $.param(itemJSON), function(json){
+					if(json.returnCode=='0'){
+						alert("删除成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		save:function(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {}
+			itemJSON.cronExpression = $('input.cronExpression', $tr).val();
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			//下次重启应用后会覆盖此次修改，请及时修改应用配置文件！
+			if(confirm("确定要保存此执行计划吗？")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c001', $.param(itemJSON), function(json){
+					if(json.returnCode=='0'){
+						alert("保存成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		stopAllJobs:function(e){
+		if(confirm("确定要停止全部任务吗？谨慎操作！全部停止后需重启应用才能启动！")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c007', '', function(json){
+					if(json.returnCode=='0'){
+						alert("全部任务停止成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		resumeAllJobs:function(e){
+			if(confirm("确定要暂停的全部任务吗？")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c005', '', function(json){
+					if(json.returnCode=='0'){
+						alert("全部任务暂停成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		startAllJobs:function(e){
+			if(confirm("确定要启动已暂停的全部任务吗？")){
+				Util.ajax.postJson('front/sh/common!execute?uid=c006', '', function(json){
+					if(json.returnCode=='0'){
+						alert("全部暂停任务恢复启动成功！");
+						Main.prototype.listInit();
+					}
+			    });
+			}
+		},
+		cancel:function(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			$tr.removeClass('modifyMode');
+		},
+		edit:function(e){
+			console.log('edit')
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			$tr.addClass('modifyMode');
+		}
+	}
+	Handlebars.registerHelper('toJSON', function(obj) {
+		return encodeURIComponent(JSON.stringify(obj));
+	});
+	$('#stopAll').on('click',function(){
+		Main.prototype.stopAllJobs();
+	});
+	$('#startAll').on('click',function(){
+		Main.prototype.startAllJobs();
+	});	
+	$('#resumeAll').on('click',function(){
+		Main.prototype.resumeAllJobs();
+	});	
+</script>
+</body>
+</html>

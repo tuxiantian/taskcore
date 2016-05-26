@@ -1,0 +1,291 @@
+/* alice.base 样式模块 */
+/* 防止用户自定义背景颜色对网页的影响，添加让用户可以自定义字体 */
+html {
+    color:#707070;
+    background:#fff;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+/* 内外边距通常让各个浏览器样式的表现位置不同 */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+    margin:0;padding:0;
+}
+/* 重设 HTML5 标签, IE 需要在 js 中 createElement(TAG) */
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section { 
+    display:block;
+}
+/* HTML5 媒体文件跟 img 保持一致 */
+audio,canvas,video {
+    display: inline-block;*display: inline;*zoom: 1;
+}
+/* 要注意表单元素并不继承父级 font 的问题 */
+body,button,input,select,textarea {
+    font:12px/1.5 "Microsoft Yahei",tahoma,arial,"Hiragino Sans GB",\5b8b\4f53;
+}
+input,select,textarea {
+    font-size:100%;
+}
+/* 去掉各Table  cell 的边距并让其边重合 */
+table {
+    border-collapse:collapse;border-spacing:0;
+}
+/* IE bug fixed: th 不继承 text-align*/
+th {
+    text-align:inherit;
+}
+/* 去除默认边框 */
+fieldset,img {
+    border:0;
+}
+/* ie6 7 8(q) bug 显示为行内表现 */
+iframe {
+    display:block;
+}
+/* 去掉 firefox 下此元素的边框 */
+abbr,acronym {
+    border:0;font-variant:normal;
+}
+/* 一致的 del 样式 */
+del {
+    text-decoration:line-through;
+}
+address,caption,cite,code,dfn,em,th,var {
+    font-style:normal;
+    font-weight:500;
+}
+/* 去掉列表前的标识, li 会继承 */
+ol,ul {
+    list-style:none;
+}
+/* 对齐是排版最重要的因素, 别让什么都居中 */
+caption,th {
+    text-align:left;
+}
+/* 来自yahoo, 让标题都自定义, 适应多个系统应用 */
+h1,h2,h3,h4,h5,h6 {
+    font-size:100%;
+    font-weight:500;
+}
+q:before,q:after {
+    content:'';
+}
+/* 统一上标和下标 */
+sub, sup {
+    font-size: 75%; line-height: 0; position: relative; vertical-align: baseline;
+}
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+/* 鼠标悬停 */
+a:hover {
+    text-decoration: none;
+}
+/* 默认不显示下划线，保持页面简洁 */
+ins,a {
+    text-decoration:none;
+}
+/* 清理浮动 */
+.fn-clear:after {
+    visibility:hidden;
+    display:block;
+    font-size:0;
+    content:" ";
+    clear:both;
+    height:0;
+}
+.fn-clear {
+    zoom:1; /* for IE6 IE7 */
+}
+/* 隐藏, 通常用来与 JS 配合 */
+body .fn-hide {
+    display:none;
+}
+/* 设置内联, 减少浮动带来的bug */
+.fn-left,.fn-right {
+    display:inline;
+}
+.fn-left {
+    float:left;
+}
+.fn-right {
+    float:right;
+}
+/* 单行文字溢出时出现省略号，需设定宽度 */ 
+.fn-text-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* 人民币符号 */
+.fn-rmb {
+    font-family: arial;
+    font-style: normal;
+    padding-right: 4px;
+}
+/* 文字两端对齐 */
+.fn-text-justify{
+    text-align:justify;
+}
+/* 重要文字 */
+.fn-text-imp{
+    color: #0085CC;
+}
+/*字体颜色*/
+.fn-red{color:red}
+.fn-orange{color:#f37800}
+.fn-white{color:white}
+.fn-gray{color:##9a9a9a}
+.fn-green{color:#53a000}
+.fn-bold{font-weight:700;}
+.ui-loading{
+    margin: 100px auto;
+    font-size: 16px;
+}
+.ui-loading h1{
+    text-align: center;
+    font-size:12px
+}
+.ui-loading img{
+    margin-right: 10px;
+}
+
+
+/* pagination  start  author:fany */
+.pagination {
+    font-size:12px;
+}
+
+.pagination a {
+    text-decoration: none;
+    border: solid 1px #E0E0E0;
+    color: #999;
+    background:#F5F5F5;
+    border-radius:3px;
+}
+
+.pagination a, .pagination span {
+    font-family:Arial,Tahoma,"\5fae\8f6f\96c5\9ed1","\5B8B\4F53","STXihei";
+    display: block;
+    float: left;
+    padding: 5px 13px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius:3px;
+}
+.pagination .current {
+    background: #398BE0;
+    color: #fff;
+    border: solid 1px #4A81C4;
+    border-radius:3px;
+}
+.pagination .current.prev, .pagination .current.next{
+    color:#999;
+    border-color:#999;
+    background:#fff;
+}
+.normalBtnArea {
+    line-height:33px;
+    *height:35px;
+}
+.formBtnArea .normalBtnArea {
+    height:45px;
+    line-height:45px;
+}
+.formBtnArea .normalBtnArea a.largeBtn {
+    padding:12px 40px;
+    font-size:14px;
+    margin-right:20px;
+    border-radius:3px;
+}
+a.normalBtn {
+    padding:8px 15px;
+    font-size:12px;
+    margin:0px;
+    margin-right:5px;
+    border-radius:3px;
+    line-height:33px;
+}
+a.smallBtn {
+    padding:4px 8px;
+    font-size:12px;
+    margin:0px;
+    margin-right:5px;
+    border-radius:3px;
+}
+.normalBtnArea a.normalBtn {
+    padding:8px 15px;
+    font-size:12px;
+    margin:0px;
+    margin-right:5px;
+    border-radius:3px;
+    line-height:33px;
+}
+.formBtnArea .normalBtnArea a.normalBtn {
+    padding:8px 15px;
+    font-size:12px;
+    margin:0px;
+    margin-right:5px;
+    border-radius:3px;
+    line-height:40px;
+}
+.formBtnArea .normalBtnArea a.largeBtn {
+    padding:12px 40px;
+    font-size:14px;
+    margin-right:20px;
+    border-radius:3px;
+}
+div.tabsBtn a.normalBtn {
+    padding:5px 15px;
+    font-size:12px;
+    margin:0px;
+    margin-right:5px;
+    border-radius:3px;
+    line-height:33px;
+}
+a.BGblue {
+    border:1px solid #4A81C4;
+    background:#3A8BE0 url(images/hn10085/topBtn_bg.png) top left repeat-x;
+    color:#fff;
+}
+a.BGblue:hover {
+    border:1px solid #4C90E5;
+    background:#4BA0F5 url(images/hn10085/topBtn_bg.png) top left repeat-x;
+    color:#fff;
+    text-decoration:none
+}
+a.BGblue:active {
+    border:1px solid #2F6AA6;
+    background:#2873C3 url(images/hn10085/topBtn_bg.png) top left repeat-x;
+    color:#fff;
+}
+a.BGgray {
+    border:1px solid #D7DCE1;
+    background:#F5F5F5 url(images/hn10085/topBtn_bg.png) top left repeat-x;
+    color:#989898;
+}
+a.BGgray:hover {
+    border:1px solid #E0E0E0;
+    background:#fcfcfc url(images/hn10085/topBtn_bg.png) top left repeat-x;
+    color:#989898;
+    text-decoration:none
+}
+a.BGgray:active {
+    border:1px solid #E0E0E0;
+    background:#EBEBEB url(images/hn10085/topBtn_bg.png) top left repeat-x;
+    color:#989898;
+}
+/*start===============*/
+.table-list{padding: 15px 30px;}
+.table-form{width: 100%;border-collapse: collapse;border-spacing: 0;}
+.table-form tr th,.table-form tr td{border:1px solid #edeeee;text-align: center;}
+.table-form .table-title tr th{padding: 4px;height: 32px;color:#414142;background: #F2F4F6;}
+.table-form .table-content tr td{padding: 4px;height: 28px;color:#999;}
+.table-form .table-content tr td input{width: 100%;height: 100%;border: 0;outline: 0;text-align: center;color: inherit;}
+.table-form .table-content tr td input[readonly=readonly]{background: rgba(0,0,0,0);}
+.table-form .table-content tr td a{color:#bbb;}
+.table-form .table-content tr td a:hover{color:#555;text-decoration: underline;}
+.table-form .table-content tr td a.del:hover{color:#f00;text-decoration:none;font-weight: bold;}
+.table-form .table-content tr:hover{background:#f4f8fd;}
+.table-form thead:first-child tr:first-child th:first-child, .table-form tbody:first-child tr:first-child td:first-child{border-top-left-radius:2px;-webkit-border-top-left-radius:2px;-moz-border-radius-topleft:2px;}
+.table-form caption>h1{font-size: 20px;padding: 5px 0;text-align: center;font-weight: 500;}
+.table-foot-btn{margin:20px 0 10px;text-align: center;}
+/*end=================*/

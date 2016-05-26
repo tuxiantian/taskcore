@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"  "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- ********************************************Scheduler配置******************************************** -->
+	<bean id="schedulerFactoryBean"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:config/quartz.properties" />
+		<property name="triggers">
+			<list>
+				<ref bean="testTrigger1" />
+			</list>
+		</property>
+		<property name="startupDelay" value="3" />
+		<!--可选，QuartzScheduler 启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了 -->
+		<property name="overwriteExistingJobs" value="true" />
+		<property name="applicationContextSchedulerContextKey" value="applicationContext" />
+		<property name="schedulerName" value="ds_scheduler" />
+	</bean>
+	<!-- ********************************************QuartzManager配置******************************************** -->
+	<bean id="quartzManager"
+		class="com.ai.taskcore.quartz.impl.QuartzManagerImpl">
+		<property name="scheduler" ref="schedulerFactoryBean" />
+	</bean>
+	<!-- ********************************************QuartzService配置******************************************** -->
+	<bean id="quartzService"
+		class="com.ai.taskcore.quartz.impl.QuartzServiceImpl">
+		<property name="scheduler" ref="schedulerFactoryBean" />
+		<property name="quartzManager" ref="quartzManager" />
+	</bean>
+	
+	<!-- ********************************************Trigger配置******************************************** -->
+	<bean id="testTrigger1" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="name" value="testTrigger1" />
+		<property name="group" value="ds_trigger" />
+		<property name="jobDetail">
+			<ref bean="myJobDetail1" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0/10 * * * ?</value>
+		</property>
+	</bean>
+	<!-- ********************************************JobDeail配置******************************************** -->
+	<bean id="myJobDetail1"
+		class="com.ai.taskcore.quartz.impl.MethodInvokingJobDetailFactoryBean">
+		<!--false表示等上一个任务执行完后再开启新的任务 -->
+		<property name="concurrent" value="false" />
+		<!-- true表示将此JOB持久化到数据库 -->
+		<property name="durable" value="true" />
+		<property name="targetObject" ref="myJobTest1" />
+		<property name="targetMethod" value="executeInternal" />
+		<property name="group" value="ds_jobs" />
+		<property name="description" value="myJobTest1" />
+	</bean>
+</beans> 

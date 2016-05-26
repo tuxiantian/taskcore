@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="renderer" content="webkit" />
+<meta http-equiv="X-UA-Compatible" content="IE=8,chrome=1" />
+	<title>后台进程管理</title>
+	<link rel="stylesheet" type="text/css" href="css/common.css" media="all">
+	<link rel="stylesheet" href="css/ui-dialog.css" />
+	<style type="text/css">
+
+	</style>
+</head>
+<body>
+	<div class="standard">
+        <h1></h1>
+    </div>
+    <div class="table-list">
+    	<table class="table-record table-form">
+    		<caption><h1>后台进程管理</h1></caption>
+    		<thead class="table-title">
+	    		<tr>
+	    			<th>JOB名称</th>
+	    			<th>JOB描述</th>
+	    			<th>JOB组</th>
+	    			<th>执行计划</th>
+	    			<th>触发器状态</th>
+	    			<th>触发器名称</th>
+	    			<th>触发器组</th>
+	    			<th>启动时间</th>
+	    			<th>停止时间</th>
+	    			<th>JOB类</th>
+	    			<th>操作</th>
+	    		</tr>
+    		</thead>
+    		<tbody id="J_tabletpl" class="table-content"></tbody>
+    	</table>
+    </div>
+<style>
+	.table-record tbody tr td>span, 
+	.table-record tbody tr td>.edit, 
+	.table-record tbody .modifyMode td>input, 
+	.table-record tbody .modifyMode td>.save, 
+	.table-record tbody .modifyMode td>.cancel 
+	{ display:inline-block; }
+	
+	
+	.table-record tbody .modifyMode td>span, 
+	.table-record tbody .modifyMode td>.edit, 
+	.table-record tbody tr td>input, 
+	.table-record tbody tr td>.save, 
+	.table-record tbody tr td>.cancel 
+	{ display:none; }
+	
+	
+</style>
+<script id="T_tabletpl" type="text/x-handlebars-template">
+    			{{#if beans}}
+        			{{#each beans}}
+           				 <tr data-json="{{toJSON this}}">
+                			<td>{{jobName}}</td>
+                			<td>{{description}}</td>
+							<td>{{jobGroup}}</td>
+               				<td><span class="cronExpression">{{cronExpression}}</span><input type="text" class="cronExpression" value="{{cronExpression}}" /></td>
+							<td>{{triggerDesc}}</td>   
+							<td>{{triggerName}}</td>
+							<td>{{triggerGroup}}</td>            				
+							<td>{{startTime}}</td>
+                			<td>{{previousFireTime}}</td>
+							<td>{{targetObject}}</td>
+                			<td>
+	    						<a href="javascript:void(0)" class="edit">修改</a>
+	    						<a href="javascript:void(0)" class="save">保存</a>
+	    						<a href="javascript:void(0)" class="cancel">取消</a>
+
+	    						<a href="javascript:void(0)" class="pauseTrigger">暂停</a>
+	    						<a href="javascript:void(0)" class="resumeTrigger">启动</a>
+								<a href="javascript:void(0)" class="runAJobNow">立即执行</a>
+	    						<a href="javascript:void(0)" class="deleteJob">删除</a>
+	    					</td>
+            			</tr>
+        			{{/each}}
+    			{{/if}}
+ </script>
+<script type="text/javascript" src="js/jquery-1.9.0-min.js"></script>
+<script type="text/javascript" src="js/dialog-plus.js"></script>
+<script type="text/javascript" src="lib/handlebars/1.3.0/handlebars.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script>
+
+	//页面加载完开始执行
+	$(document).ready(function () {
+		new Main();
+	});
+	var Main = function() {
+		this.initialize();
+	}
+	Main.prototype = {
+		initialize:function(){
+			this.$list = $('.table-record');
+			this.eventInit();
+			this.listInit();
+		}, 
+		eventInit:function(){
+			this.$list.on('click', 'tbody tr td .edit', $.proxy(this.edit, this))
+				.on('click', 'tbody tr td .cancel', $.proxy(this.cancel, this))
+				.on('click', 'tbody tr td .save', $.proxy(this.save, this))
+				.on('click', 'tbody tr td .pauseTrigger', $.proxy(this.pauseTrigger, this))
+				.on('click', 'tbody tr td .resumeTrigger', $.proxy(this.resumeTrigger, this))
+				.on('click', 'tbody tr td .runAJobNow', $.proxy(this.runAJobNow, this))
+				.on('click', 'tbody tr td .deleteJob', $.proxy(this.deleteJob, this));
+		}, 
+		listInit:function(){
+			Util.ajax.postJson('front/sh/common!execute?uid=c008','',function(json){
+				Util.ajax.loadTemp($('#J_tabletpl'), $('#T_tabletpl'), json);//加载模板
+		    });
+		},
+		pauseTrigger:function(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			alert(json.triggerName);
+			Util.ajax.postJson('front/sh/common!execute?uid=c003', $.param(itemJSON), function(json){
+				if(json.returnCode=='0'){
+					alert("暂停成功！");
+					this.listInit();
+				}
+		    });
+		},
+		resumeTrigger(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
+				if(json.returnCode=='0'){
+					alert("启动成功！");
+					this.listInit();
+				}
+		    });
+		},
+		runAJobNow(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
+				if(json.returnCode=='0'){
+					alert("立即执行成功！");
+					this.listInit();
+				}
+		    });
+		},
+		deleteJob(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {};
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
+				if(json.returnCode=='0'){
+					alert("删除成功！");
+					this.listInit();
+				}
+		    });
+		},
+		save:function(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
+			var itemJSON = {}
+			itemJSON.cronExpression = $('input.cronExpression', $tr).val();
+			itemJSON.triggerName = json.triggerName;
+			itemJSON.triggerGroup = json.triggerGroup;
+			Util.ajax.postJson('front/sh/common!execute?uid=c001', $.param(itemJSON), function(json){
+				if(json.returnCode=='0'){
+					alert(保存成功！);
+					this.listInit();
+				}
+		    });
+		},
+		cancel:function(e){
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			$tr.removeClass('modifyMode');
+		},
+		edit:function(e){
+			console.log('edit')
+			var $link = $(e.currentTarget);
+			var $tr = $link.parents('tr');
+			$tr.addClass('modifyMode');
+		}
+	}
+	
+	Handlebars.registerHelper('toJSON', function(obj) {
+		return encodeURIComponent(JSON.stringify(obj));
+	});
+	
+	//删除一行 绑定class  .del
+ 	$.each($('.del'),function(i){
+		$(this).on('click',function(e){
+			var obj=e.currentTarget;
+			var params = {
+			id : 'd3',
+			title : '提示信息',
+			content : '您确认要删除这条记录？',
+			okVal: '确定',
+			okCallback: function () {
+		        	$(obj).parents("tr").remove();
+		    },
+		    cancelVal: '取消',
+		    cancelCallback: function () {}
+		}
+		Util.dialog.confirm(params);
+		});
+	});
+	
+	
+	
+	//修改一行中的某一列 绑定class .update
+	$.each($('.update'),function(i,n){
+		$(n).bind('click',function(e){
+			var obj=e.currentTarget;
+			var currentInput=$(obj).parents("tr").find("td.in-upd input");
+			currentInput.attr("readonly",false);
+			currentInput.focus();
+		});	
+	});
+	
+	 
+	//保存
+	$('#save').on('click',function(){
+		var params = {
+			id : 'd2',
+			title : '提示信息',
+			content : '您确认要保存吗?',
+			okVal: '确定',
+			okCallback: function () {
+				alert($(this).find("input"));
+				
+				//triggerName  triggerGroup cronExpression
+				// /front/sh/common!execute?uid=c001
+				
+				
+				
+				$.each($('.in-upd'),function(){
+					
+					console.log($(this).find("input"))
+					$(this).find("input").attr("readonly",true);
+				})
+		    },
+		    cancelVal: '取消',
+		    cancelCallback: function () {}
+		}
+		Util.dialog.confirm(params);
+	});
+	
+
+	
+
+</script>
+</body>
+</html>
