@@ -18,9 +18,7 @@ import com.ai.common.xml.util.ControlRequestUtil;
 import com.ai.frame.bean.InputObject;
 import com.ai.frame.logger.Logger;
 import com.ai.frame.logger.LoggerFactory;
-import com.ai.frame.util.ConvertUtil;
 import com.ai.taskcore.util.StringUtil;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
