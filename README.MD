@@ -8,3 +8,5 @@ mvn install:install-file -Dfile=E:/webfront/ckeditor-java-core-3.5.3/ckeditor-ja
 	<version>3.6.6.2</version>
 </dependency>
 ```
+WEB-INF/lib目录下面的私有jar包可以采用上面的方式安装。
+在使用过程中发现，若先在代码中删除现有的job,启动项目后会报错。所以若想清理项目中废弃的job，需要先在管理界面删除job，然后删除代码。
