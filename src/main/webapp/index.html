@@ -174,9 +174,9 @@
 			var $tr = $link.parents('tr');
 			var json = JSON.parse(decodeURIComponent($tr.attr('data-json')));
 			var itemJSON = {};
-			itemJSON.triggerName = json.triggerName;
-			itemJSON.triggerGroup = json.triggerGroup;
-			if(confirm("确定要立即执行[" + json.description + "]任务吗？立即执行不会影响原执行计划！")){
+			itemJSON.jobName = json.jobName;
+			itemJSON.jobGroup = json.jobGroup;
+			if(confirm("确定要立即执行此任务吗？立即执行不会影响原执行计划！")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("立即执行成功！");
