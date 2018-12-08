@@ -143,7 +143,7 @@
 			var itemJSON = {};
 			itemJSON.triggerName = json.triggerName;
 			itemJSON.triggerGroup = json.triggerGroup;
-			if(confirm("确定要暂停此任务吗？")){
+			if(confirm("确定要暂停[" + json.description + "]任务吗？")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c003', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("暂停成功！");
@@ -160,7 +160,7 @@
 			itemJSON.triggerName = json.triggerName;
 			itemJSON.triggerGroup = json.triggerGroup;
 			
-			if(confirm("确定要启动此任务吗？")){
+			if(confirm("确定要启动[" + json.description + "]任务吗？")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("启动成功！");
@@ -176,7 +176,7 @@
 			var itemJSON = {};
 			itemJSON.triggerName = json.triggerName;
 			itemJSON.triggerGroup = json.triggerGroup;
-			if(confirm("确定要立即执行此任务吗？立即执行不会影响原执行计划！")){
+			if(confirm("确定要立即执行[" + json.description + "]任务吗？立即执行不会影响原执行计划！")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("立即执行成功！");
@@ -194,7 +194,7 @@
 			itemJSON.triggerGroup = json.triggerGroup;
 			itemJSON.jobName = json.jobName;
 			itemJSON.jobGroup = json.jobGroup;
-			if(confirm("确定要删除此任务吗？谨慎操作，删除后重启应用后会重新加载！")){
+			if(confirm("确定要删除[" + json.description + "]任务吗？谨慎操作，删除后重启应用后会重新加载！")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c002', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("删除成功！");
@@ -212,7 +212,7 @@
 			itemJSON.triggerName = json.triggerName;
 			itemJSON.triggerGroup = json.triggerGroup;
 			//下次重启应用后会覆盖此次修改，请及时修改应用配置文件！
-			if(confirm("确定要保存此执行计划吗？")){
+			if(confirm("确定要保存[" + json.description + "]的执行计划吗？")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c001', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("保存成功！");
