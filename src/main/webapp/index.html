@@ -20,6 +20,7 @@
     		<caption><h1>后台进程管理</h1></caption>
     		<thead class="table-title">
 	    		<tr>
+					<th>序号</th>
 	    			<th>JOB名称</th>
 	    			<th>JOB描述</th>
 	    			<th>JOB组</th>
@@ -67,6 +68,7 @@
     			{{#if beans}}
         			{{#each beans}}
            				 <tr data-json="{{toJSON this}}">
+							 <td>{{index @index}}</td>
                 			<td>{{jobName}}</td>
                 			<td>{{description}}</td>
 							<td>{{jobGroup}}</td>
@@ -176,7 +178,7 @@
 			var itemJSON = {};
 			itemJSON.jobName = json.jobName;
 			itemJSON.jobGroup = json.jobGroup;
-			if(confirm("确定要立即执行此任务吗？立即执行不会影响原执行计划！")){
+			if(confirm("确定要立即执行[" + json.description + "]任务吗？立即执行不会影响原执行计划！")){
 				Util.ajax.postJson('front/sh/common!execute?uid=c004', $.param(itemJSON), function(json){
 					if(json.returnCode=='0'){
 						alert("立即执行成功！");
